@@ -16,6 +16,7 @@ from utils.tennis_utils import get_video_properties, diff_xy, remove_outliers, i
 from models.TrackNet.TrackNetCode import trackNet
 from sktime.datatypes._panel._convert import from_2d_array_to_nested
 from pickle import load
+from models.court_detector.CourtDetector import CourtDetector
 import argparse
 import cv2
 import imutils
@@ -45,6 +46,7 @@ bounce_classifier_model = "models/BounceClassifier/bounce_classifier.pkl"
 
 # get video fps&video size
 bounce = 1
+show_velocity = 1
 video = cv2.VideoCapture(input_video_path)
 fps = int(video.get(cv2.CAP_PROP_FPS))
 print('fps : {}'.format(fps))
@@ -82,6 +84,9 @@ output_video = cv2.VideoWriter(output_video_path, fourcc, fps, (output_width, ou
 # loop over frames from the video file stream
 fps, length, v_width, v_height = get_video_properties(video)
 
+# court
+court_detector = CourtDetector()
+
 video = cv2.VideoCapture(input_video_path)
 coords = []
 frame_i = 0
@@ -91,13 +96,27 @@ last = time.time() # start counting
 # Add all images to frames
 while True:
     ret, frame = video.read()
-    if ret is False:
+    frame_i += 1
+
+    if ret:
+        if frame_i == 1:
+            print('Detecting the court and the players...')
+            lines = court_detector.detect(frame)
+        else: # then track it
+            lines = court_detector.track_court(frame)
+        
+        for i in range(0, len(lines), 4):
+            x1, y1, x2, y2 = lines[i],lines[i+1], lines[i+2], lines[i+3]
+            cv2.line(frame, (int(x1),int(y1)),(int(x2),int(y2)), (0,0,255), 5)
+        new_frame = cv2.resize(frame, (v_width, v_height))
+        frames.append(new_frame)
+    else:
         break
-    frames.append(frame)
+
 for img in frames:
     print('Tracking the ball(%): {}'.format(round( (currentFrame / total) * 100, 2)))
     frame_i += 1
-
+    
     # detect the ball
     # img is the frame that TrackNet will predict the position
     # since we need to change the size and type of img, copy it to output_img
@@ -253,7 +272,7 @@ if bounce == 1:
   X = pd.concat([Xs, Ys, Vs], 1)
 
   # load the pre-trained classifier  
-  clf = load(open('clf.pkl', 'rb'))
+  clf = load(open(bounce_classifier_model, 'rb'))
 
   predcted = clf.predict(X)
   idx = list(np.where(predcted == 1)[0])
@@ -289,3 +308,51 @@ if bounce == 1:
 
   video.release()
   output_video.release()
+
+velocity_output_video_path = "outputs/output_velocity.mp4"
+# Velocity display in the video
+if show_velocity == 1:
+    # Load the output video
+    velocity_video = cv2.VideoCapture(output_video_path)
+
+    # Define the codec and create a VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    velocity_output_video = cv2.VideoWriter(velocity_output_video_path, fourcc, fps, (output_width, output_height))
+
+    # Loop over frames from the velocity video
+    while True:
+        ret, frame = velocity_video.read()
+        if ret is False:
+            break
+
+        # Get the frame number
+        frame_number = int(velocity_video.get(cv2.CAP_PROP_POS_FRAMES))
+
+        # Get the corresponding velocity value
+        velocity = V[frame_number]
+
+        # Draw velocity information on the frame
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        text = f'Velocity: {velocity:.2f}'
+        org = (10, 30)
+        fontScale = 1
+        color = (0, 255, 0)  # Green color
+        thickness = 2
+
+        # Draw a filled rectangle as the background
+        rectangle_padding = 10
+        text_size, _ = cv2.getTextSize(text, font, fontScale, thickness)
+        rectangle_width = text_size[0] + 2 * rectangle_padding
+        rectangle_height = text_size[1] + 2 * rectangle_padding
+        rectangle_position = (org[0], org[1] - text_size[1] - rectangle_padding)
+        cv2.rectangle(frame, rectangle_position, (rectangle_position[0] + rectangle_width, rectangle_position[1] + rectangle_height), (0, 0, 0), -1)
+
+        # Write the velocity text on the frame
+        cv2.putText(frame, text, org, font, fontScale, color, thickness, cv2.LINE_AA)
+
+        # Write the frame to the output video
+        velocity_output_video.write(frame)
+
+    # Release the velocity video and output video
+    velocity_video.release()
+    velocity_output_video.release()
