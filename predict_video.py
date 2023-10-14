@@ -1,9 +1,9 @@
 # ============================================================
-#                    __     _________  __
-#                    \ \   / /_   _\ \/ /
-#                     \ \ / /  | |  \  / 
-#                      \ V /   | |  /  \ 
-#                       \_/    |_| /_/\_\
+# ===                __     _________  __                  ===
+# ===                \ \   / /_   _\ \/ /                  ===
+# ===                 \ \ / /  | |  \  /                   ===
+# ===                  \ V /   | |  /  \                   ===
+# ===                   \_/    |_| /_/\_\                  ===
 # ============================================================
 # Authors:               Muhammad Rohaan Atique (20I-0410)
 #                        Ahmed Moiz (20I-2603)
@@ -38,7 +38,7 @@ output_video_path = args.output_video_path
 
 #TrackNET Parameters
 n_classes = 256
-tracknet_weights_path = "model.1"
+tracknet_weights_path = "models/TrackNet/tracknet_weights.1"
 
 # get video fps&video size
 video = cv2.VideoCapture(input_video_path)
@@ -84,7 +84,12 @@ frame_i = 0
 frames = []
 t = []
 last = time.time() # start counting 
-# while (True):
+# Add all images to frames
+while True:
+    ret, frame = video.read()
+    if ret is False:
+        break
+    frames.append(frame)
 for img in frames:
     print('Tracking the ball: {}'.format(round( (currentFrame / total) * 100, 2)))
     frame_i += 1
