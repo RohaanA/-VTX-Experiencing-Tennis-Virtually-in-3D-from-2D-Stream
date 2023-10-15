@@ -24,6 +24,7 @@ import queue
 import time
 import numpy as np
 import pandas as pd
+import os
 
 # parse parameters
 parser = argparse.ArgumentParser()
@@ -61,6 +62,10 @@ else :
     prop = cv2.CAP_PROP_FRAME_COUNT
 total = int(video.get(prop))
 print('total frames : {}'.format(total))
+
+# Create output folder if it doesn't exist
+if not os.path.exists('outputs'):
+    os.makedirs('outputs')
 
 # start from first frame
 currentFrame = 0
