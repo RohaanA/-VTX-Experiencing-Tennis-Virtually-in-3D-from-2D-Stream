@@ -100,7 +100,7 @@ while True:
 
     if ret:
         if frame_i == 1:
-            print('Detecting the court and the players...')
+            print('Detecting the court...')
             lines = court_detector.detect(frame)
         else: # then track it
             lines = court_detector.track_court(frame)
@@ -296,6 +296,7 @@ if bounce == 1:
     if ret:
       # if coords[i] is not None:
       if i in idx:
+        print("Drawing bounce....")
         center_coordinates = int(xy[i][0]), int(xy[i][1])
         radius = 3
         color = (255, 0, 0)
@@ -317,7 +318,7 @@ if show_velocity == 1:
 
     # Define the codec and create a VideoWriter object
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    velocity_output_video = cv2.VideoWriter(velocity_output_video_path, fourcc, fps, (output_width, output_height))
+    velocity_output_video = cv2.VideoWriter("outputs/final_video.mp4", fourcc, fps, (output_width, output_height))
 
     # Loop over frames from the velocity video
     while True:
@@ -328,6 +329,9 @@ if show_velocity == 1:
         # Get the frame number
         frame_number = int(velocity_video.get(cv2.CAP_PROP_POS_FRAMES))
 
+        #Check if the frame number is valid
+        if frame_number >= len(V):
+            break
         # Get the corresponding velocity value
         velocity = V[frame_number]
 
