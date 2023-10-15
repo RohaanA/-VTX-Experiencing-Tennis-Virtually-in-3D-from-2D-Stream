@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import imutils
 
 def get_video_properties(video):
     # Find OpenCV version
@@ -83,3 +83,11 @@ def interpolation(coords):
   newCoords = [*zip(xxx,yyy)]
 
   return newCoords
+def get_frames(video):
+    # try to determine the total number of frames in the video file
+  if imutils.is_cv2() is True :
+      prop = cv2.cv.CV_CAP_PROP_FRAME_COUNT
+  else : 
+      prop = cv2.CAP_PROP_FRAME_COUNT
+  total = int(video.get(prop))
+  return total
