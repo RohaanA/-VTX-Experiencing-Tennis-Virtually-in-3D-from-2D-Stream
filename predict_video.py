@@ -71,6 +71,7 @@ if not os.path.exists('outputs'):
 
 #Run court detection model
 coords, t, frames, last = start_courtdetection(video, v_width, v_height)
+#Label 
 #Run TrackNet model
 coords, t, output_video = start_tracknet(n_classes, tracknet_weights_path, frames, total, output_video_path, fps, output_width, output_height, coords, t, last)
 
