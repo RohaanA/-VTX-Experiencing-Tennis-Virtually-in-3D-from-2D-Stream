@@ -114,6 +114,10 @@ def start_tracknet(n_classes, tracknet_weights_path, frames, total, output_video
 
         # next frame
         currentFrame += 1
+    #Store the coords in a file called ball_coords.txt
+    f = open("ball_coords.txt", "w")
+    for coord in coords:
+        f.write(str(coord) + "\n")
     #Return the video with the ball tracked
     return coords, t, output_video
     
