@@ -56,6 +56,7 @@ def start_detectbounce(input_video_path, bounce_classifier_model, xy, V, output_
   print(fps)
   print(length)
 
+  #Write a file called "bounces.txt", where each line is a frame number where a value of None means no bounce, 1 means bounce
   output_video = cv2.VideoWriter(output_path, fourcc, fps, (output_width, output_height))
   i = 0
   while True:
@@ -63,12 +64,17 @@ def start_detectbounce(input_video_path, bounce_classifier_model, xy, V, output_
     if ret:
       # if coords[i] is not None:
       if i in idx:
+        with(open('bounces.txt', 'a')) as f:
+          f.write(str(1) + '\n')
         print("Drawing bounce....")
         center_coordinates = int(xy[i][0]), int(xy[i][1])
         radius = 3
         color = (255, 0, 0)
         thickness = -1
         cv2.circle(frame, center_coordinates, 10, color, thickness)
+      else:
+        with(open('bounces.txt', 'a')) as f:
+          f.write("None" + '\n')
       i += 1
       output_video.write(frame)
     else:
