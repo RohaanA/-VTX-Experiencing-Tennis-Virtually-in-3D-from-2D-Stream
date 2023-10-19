@@ -14,6 +14,7 @@ Tennis is a popular sport enjoyed by millions of fans worldwide. The ability to 
 We are using a number of computer vision techniques in this project, such as the use of Hough Transforms for accurate tennis court detection. 
 
 # Models 
- - 
+ - YOLO-V8 NANO
+ - TrackNet (for ball tracking)
 # Results
 TODO
