@@ -1,13 +1,15 @@
 # (VTX) Experiencing Tennis Virtually in 3D from 2D Stream
 
 Experience your favourite matches in 3 dimensions! (View Poster Here)
+![image](https://github.com/RohaanA/-VTX-Experiencing-Tennis-Virtually-in-3D-from-2D-Stream/assets/119864494/00199f16-cce9-4a26-b10b-cc4a9203afce)
+
 
 This is a Final Year Project presented by NU-FAST Islamabad. 
 Team Members:
   - i200410 - Muhammad Rohaan Atique
   - i202603 - Ahmed Moiz
   - k201748 - Marrium Jilani
-
+ 
 # Purpose
 Tennis is a popular sport enjoyed by millions of fans worldwide. The ability to watch and analyze tennis matches is essential for both enthusiasts and professionals in the field. However, traditional 2D match streams often fail to capture the full depth and spatial information of the game, limiting the viewer's immersion and understanding. To address this limitation, the VTX project was undertaken as a final-year project to explore the conversion of 2D tennis match streams into a 3D representation using computer vision techniques.
 # Methodologies
