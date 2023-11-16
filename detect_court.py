@@ -16,19 +16,30 @@ def start_courtdetection(video, v_width, v_height):
     t = []
     last = time.time() # start counting 
     
+    
     # Detect court lines in the first frame
     ret, frame = video.read()
-    if ret:
-        print('Detecting the court lines...')
-        lines = court_detector.detect(frame)
-    else:
-        return coords, t, frames, last
+    # frame_i += 1
+    # if ret:
+        
+    #     print('Detecting the court lines...')
+    #     if frame_i == 1:
+    #         lines = court_detector.detect(frame)
+    #     else: # then track it
+    #         lines = court_detector.track_court(frame)
+        
+    # else:
+    #     return coords, t, frames, last
     
     # Process the frames
     while True:
         frame_i += 1
 
         if ret:
+            if frame_i == 1:
+                lines = court_detector.detect(frame)
+            else: # then track it
+                lines = court_detector.track_court(frame)
             for i in range(0, len(lines), 4):
                 x1, y1, x2, y2 = lines[i],lines[i+1], lines[i+2], lines[i+3]
                 cv2.line(frame, (int(x1),int(y1)),(int(x2),int(y2)), (0,0,255), 5)

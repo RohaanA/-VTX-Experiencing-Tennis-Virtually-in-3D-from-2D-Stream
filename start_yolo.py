@@ -5,6 +5,7 @@ from ultralytics import YOLO
 
 # Load the YOLOv8 model
 model = YOLO('yolov8n.pt')
+model = YOLO('14-3-best.pt')
 # Points from the input feed (EXPERIMENTAL)
 match_stream_points = np.array([
     [582, 316], [1237, 316], [582, 857], [1237, 857]
@@ -35,7 +36,9 @@ def start_inference(bounce_data, ball_coordinates, reference_points, input_video
             results = model(frame)
             player1_coordinates = None
             player2_coordinates = None
-            
+            # Draw the results on the frame
+            annotated_frame = results[0].plot()
+            frame = annotated_frame
             for result in results:
                 box = result.boxes
                 #Player 1 inference only if there is a box detected
@@ -61,7 +64,6 @@ def start_inference(bounce_data, ball_coordinates, reference_points, input_video
                     print("Player2 Middle Coordinates: ", player2_middle)
                     player2_coordinates = np.float32([player2_middle[0], player2_middle[1], 1]).reshape(-1, 1)
             # Visualize the results on the frame
-            annotated_frame = results[0].plot()
             if (player1_coordinates is not None) and (player2_coordinates is not None):
                 # Apply the transformation matrix to the player coordinates
                 mapped_player1_coordinates = np.dot(transform_matrix, player1_coordinates)
@@ -148,5 +150,5 @@ ball_coords = load_points_from_file("ball_coords.txt")
 bounce_data = load_bounce_data("bounces.txt")
 print("LOADED BALL COORDS", len(ball_coords))
 print("LOADED BOUNCE DATA", len(bounce_data))
-start_inference(bounce_data, ball_coords,reference_points_test)
+start_inference(bounce_data, ball_coords,reference_points_test, input_video_path="outputs/output_velocity.mp4")
     
