@@ -5,48 +5,6 @@ import xml.etree.ElementTree as ET
 import os
 
 
-# def convert_to_yolo(image_element, image_width, image_height, class_dict):
-#     yolo_annotations = []
-
-#     points = image_element.findall('points')
-#     boxes = image_element.findall('box')
-
-#     for i in range(len(points)):
-#         points_elem = points[i]
-#         box_elem = boxes[i] if i < len(boxes) else None
-
-#         label = points_elem.get('label')
-#         class_index = class_dict[label]
-
-#         xtl = float(box_elem.get('xtl'))
-#         ytl = float(box_elem.get('ytl'))
-#         xbr = float(box_elem.get('xbr'))
-#         ybr = float(box_elem.get('ybr'))
-
-#         y_center = (ytl + ybr) / 2
-#         w = xbr - xtl
-#         h = ybr - ytl
-#         x_center = (xtl + (w / 2)) / image_width
-#         y_center = (ytl + (h / 2)) / image_height
-
-#         w /= image_width
-#         h /= image_height
-
-#         # Normalize the points
-#         points_str = points_elem.get('points')
-#         normalized_points = []
-#         for point in points_str.split(';'):
-#             px, py = point.split(',')
-#             px_normalized = float(px) / image_width
-#             py_normalized = float(py) / image_height
-#             normalized_points.append(f"{px_normalized},{py_normalized}")
-#         normalized_points_str = ';'.join(normalized_points)
-
-#         yolo_annotation = f"{class_index} {x_center} {y_center} {w} {h} {normalized_points_str}"
-#         yolo_annotations.append(yolo_annotation)
-
-#     return yolo_annotations
-
 def convert_to_yolo(image_element, image_width, image_height, class_dict):
     
     yolo_annotations = []
