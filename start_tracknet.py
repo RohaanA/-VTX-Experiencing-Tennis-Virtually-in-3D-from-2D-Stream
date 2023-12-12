@@ -27,6 +27,7 @@ def start_tracknet(n_classes, tracknet_weights_path, frames, total, output_video
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     output_video = cv2.VideoWriter(output_video_path, fourcc, fps, (output_width, output_height))
     
+    
     for img in frames:
         print('Tracking the ball(%): {}'.format(round( (currentFrame / total) * 100, 2)))
         

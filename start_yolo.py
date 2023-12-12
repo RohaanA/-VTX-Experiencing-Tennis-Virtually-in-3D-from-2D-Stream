@@ -5,7 +5,7 @@ from ultralytics import YOLO
 
 # Load the YOLOv8 model
 model = YOLO('yolov8n.pt')
-model = YOLO('14-3-best.pt')
+# model = YOLO('14-3-best.pt')
 # Points from the input feed (EXPERIMENTAL)
 match_stream_points = np.array([
     [582, 316], [1237, 316], [582, 857], [1237, 857]
@@ -19,7 +19,7 @@ reference_points_test = np.array([
 # Convert the points to numpy arrays
 match_stream_points = np.float32(match_stream_points)
 
-def start_inference(bounce_data, ball_coordinates, reference_points, input_video_path="videos/small_sample.mp4"):
+def start_inference(bounce_data, ball_coordinates, reference_points, input_video_path="videos/exchanged_players.mp4"):
     cap = cv2.VideoCapture(input_video_path)
     # Calculate the transformation matrix
     transform_matrix = cv2.getPerspectiveTransform(match_stream_points, reference_points)
@@ -33,7 +33,7 @@ def start_inference(bounce_data, ball_coordinates, reference_points, input_video
 
         if success:
             # Run YOLOv8 inference on the frame
-            results = model(frame)
+            results = model.track(frame, persist=True, tracker='models/byteTrack.yaml')
             player1_coordinates = None
             player2_coordinates = None
             # Draw the results on the frame
@@ -71,10 +71,23 @@ def start_inference(bounce_data, ball_coordinates, reference_points, input_video
                 mapped_ball_coordinates = None
                 if (ball_coordinates[i_frame] is not None):
                     mapped_ball_coordinates = np.dot(transform_matrix, np.append(ball_coordinates[i_frame], 1))
+                    #Write mapped ball coordinates to file as [Frame, X, Y]
+                    with open("mapped_ball_coords.txt", "a") as file:
+                        file.write(str(mapped_ball_coordinates.tolist()) + "\n")
+                else:
+                    #Write None to file
+                    with open("mapped_ball_coords.txt", "a") as file:
+                        file.write("None\n")
                 
                 # Normalize the mapped coordinates
                 mapped_player1_coordinates /= mapped_player1_coordinates[2]
                 mapped_player2_coordinates /= mapped_player2_coordinates[2]
+                
+                #Write mapped player coordinates to file as [Frame, X, Y]
+                with open("mapped_player1_coords.txt", "a") as file:
+                    file.write(str(mapped_player1_coordinates.tolist()) + "\n")
+                with open("mapped_player2_coords.txt", "a") as file:
+                    file.write(str(mapped_player2_coordinates.tolist()) + "\n")
                 
 
                 # Extract the x and y coordinates from the mapped coordinates
@@ -150,5 +163,5 @@ ball_coords = load_points_from_file("ball_coords.txt")
 bounce_data = load_bounce_data("bounces.txt")
 print("LOADED BALL COORDS", len(ball_coords))
 print("LOADED BOUNCE DATA", len(bounce_data))
-start_inference(bounce_data, ball_coords,reference_points_test, input_video_path="outputs/output_velocity.mp4")
+start_inference(bounce_data, ball_coords,reference_points_test, input_video_path="videos/exchanged_players.mp4")
     
